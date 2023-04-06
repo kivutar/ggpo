@@ -359,6 +359,14 @@ GGPO_API GGPOErrorCode __cdecl ggpo_add_player(GGPOSession *session,
 
 
 /*
+ * ggpo_in_rollback --
+ *
+ * Returns true if ggpo is currently in rollback mode.
+ */
+GGPO_API bool __cdecl ggpo_in_rollback(GGPOSession *session);
+
+
+/*
  * ggpo_start_synctest --
  *
  * Used to being a new GGPO.net sync test session.  During a sync test, every

@@ -22,6 +22,7 @@ public:
 
 
 public:
+   virtual bool InRollback();
    virtual GGPOErrorCode DoPoll(int timeout);
    virtual GGPOErrorCode AddPlayer(GGPOPlayer *player, GGPOPlayerHandle *handle);
    virtual GGPOErrorCode AddLocalInput(GGPOPlayerHandle player, void *values, int size);

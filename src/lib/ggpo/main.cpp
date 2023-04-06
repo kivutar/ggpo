@@ -55,7 +55,14 @@ ggpo_add_player(GGPOSession *ggpo,
    return ggpo->AddPlayer(player, handle);
 }
 
-
+bool
+ggpo_in_rollback(GGPOSession *ggpo)
+{
+   if (!ggpo) {
+      return false;
+   }
+   return ggpo->InRollback();
+}
 
 GGPOErrorCode
 ggpo_start_synctest(GGPOSession **ggpo,

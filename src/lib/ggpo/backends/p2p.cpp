@@ -239,6 +239,11 @@ int Peer2PeerBackend::PollNPlayers(int current_frame)
    return total_min_confirmed;
 }
 
+bool
+Peer2PeerBackend::InRollback()
+{
+   return _sync.InRollback();
+}
 
 GGPOErrorCode
 Peer2PeerBackend::AddPlayer(GGPOPlayer *player,
