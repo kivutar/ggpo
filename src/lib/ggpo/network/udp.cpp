@@ -9,7 +9,7 @@
 #include "udp.h"
 
 SOCKET
-CreateSocket(in_addr_t addr, int bind_port, int retries, u_long iMode)
+CreateSocket(uint32_t addr, int bind_port, int retries, u_long iMode)
 {
    SOCKET s;
    sockaddr_in sin;
@@ -59,7 +59,7 @@ void Udp::Close()
 }
 
 void
-Udp::Init(in_addr_t addr, int port, Poll *poll, Callbacks *callbacks, u_long iMode)
+Udp::Init(uint32_t addr, int port, Poll *poll, Callbacks *callbacks, u_long iMode)
 {
    _callbacks = callbacks;
 
