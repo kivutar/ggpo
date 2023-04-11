@@ -63,6 +63,7 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
    for (i = 0; i < _num_players; i++) {
       _rdv.PollOnce();
    }
+   _rdv.Close();
 
    printf("Done with hole punching\n");
 

@@ -27,7 +27,7 @@ CreateSocket(in_addr_t addr, int bind_port, int retries, u_long iMode)
    ioctlsocket(s, FIONBIO, &iMode);
 
    sin.sin_family = AF_INET;
-   sin.sin_addr.s_addr = htonl(addr);
+   sin.sin_addr.s_addr = htonl(INADDR_ANY);
    for (port = bind_port; port <= bind_port + retries; port++) {
       sin.sin_port = htons(port);
       if (bind(s, (sockaddr *)&sin, sizeof sin) != SOCKET_ERROR) {
@@ -46,6 +46,11 @@ Udp::Udp() :
 }
 
 Udp::~Udp(void)
+{
+   Close();
+}
+
+void Udp::Close()
 {
    if (_socket != INVALID_SOCKET) {
       closesocket(_socket);

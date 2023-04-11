@@ -58,7 +58,6 @@ public:
 
 public:
    virtual bool OnLoopPoll(void *cookie);
-   virtual bool PollOnce();
 
 public:
    UdpProtocol();

@@ -20,7 +20,6 @@ public:
    virtual bool OnMsgPoll(void *) { return true; }
    virtual bool OnPeriodicPoll(void *, int ) { return true; }
    virtual bool OnLoopPoll(void *) { return true; }
-   virtual bool PollOnce() { return true; }
 };
 
 class Poll {
