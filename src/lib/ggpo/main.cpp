@@ -34,11 +34,13 @@ ggpo_start_session(GGPOSession **session,
                    const char *game,
                    int num_players,
                    int input_size,
-                   int localport)
+                   const char *rdvaddr,
+                   int rdvport)
 {
    *session= (GGPOSession *)new Peer2PeerBackend(cb,
                                                  game,
-                                                 localport,
+                                                 rdvaddr,
+                                                 rdvport,
                                                  num_players,
                                                  input_size);
    return GGPO_OK;

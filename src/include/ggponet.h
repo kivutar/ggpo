@@ -339,7 +339,8 @@ GGPO_API GGPOErrorCode __cdecl ggpo_start_session(GGPOSession **session,
                                                   const char *game,
                                                   int num_players,
                                                   int input_size,
-                                                  int localport);
+                                                  const char *rdvaddr,
+                                                  int rdvport);
 
 
 /*

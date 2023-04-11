@@ -20,6 +20,7 @@ static const int DEFAULT_DISCONNECT_NOTIFY_START   = 750;
 
 Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
                                    const char *gamename,
+                                   const char *rdvaddr,
                                    int rdvport,
                                    int num_players,
                                    int input_size) :
@@ -53,7 +54,7 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
    sockaddr_in rdv_addr;
    rdv_addr.sin_family = AF_INET;
    rdv_addr.sin_port = htons(rdvport);
-   rdv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+   rdv_addr.sin_addr.s_addr = inet_addr(rdvaddr);
 
    UdpMsg *msg = new UdpMsg(UdpMsg::Join);
    msg->u.join.crc = 3333; // TODO unhardcode this
