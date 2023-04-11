@@ -58,6 +58,7 @@ protected:
    GGPOSessionCallbacks  _callbacks;
    Poll                  _poll;
    Sync                  _sync;
+   Udp                   _rdv;
    Udp                   _udp;
    UdpProtocol           *_endpoints;
    UdpProtocol           _spectators[GGPO_MAX_SPECTATORS];

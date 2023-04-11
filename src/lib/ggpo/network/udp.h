@@ -38,11 +38,12 @@ protected:
 public:
    Udp();
 
-   void Init(int port, Poll *p, Callbacks *callbacks);
+   void Init(in_addr_t addr, int port, Poll *p, Callbacks *callbacks, u_long iMode);
    
    void SendTo(char *buffer, int len, int flags, struct sockaddr *dst, int destlen);
 
    virtual bool OnLoopPoll(void *cookie);
+   virtual bool PollOnce();
 
 public:
    ~Udp(void);

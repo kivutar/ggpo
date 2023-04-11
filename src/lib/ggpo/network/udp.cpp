@@ -9,7 +9,7 @@
 #include "udp.h"
 
 SOCKET
-CreateSocket(int bind_port, int retries)
+CreateSocket(in_addr_t addr, int bind_port, int retries, u_long iMode)
 {
    SOCKET s;
    sockaddr_in sin;
@@ -23,12 +23,11 @@ CreateSocket(int bind_port, int retries)
    setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char *)&optval, sizeof optval);
    setsockopt(s, SOL_SOCKET, SO_LINGER, (const char *)&loptval, sizeof loptval);
 
-   // non-blocking...
-   u_long iMode = 1;
+   // iMode = 0 means blocking
    ioctlsocket(s, FIONBIO, &iMode);
 
    sin.sin_family = AF_INET;
-   sin.sin_addr.s_addr = htonl(INADDR_ANY);
+   sin.sin_addr.s_addr = htonl(addr);
    for (port = bind_port; port <= bind_port + retries; port++) {
       sin.sin_port = htons(port);
       if (bind(s, (sockaddr *)&sin, sizeof sin) != SOCKET_ERROR) {
@@ -55,7 +54,7 @@ Udp::~Udp(void)
 }
 
 void
-Udp::Init(int port, Poll *poll, Callbacks *callbacks)
+Udp::Init(in_addr_t addr, int port, Poll *poll, Callbacks *callbacks, u_long iMode)
 {
    _callbacks = callbacks;
 
@@ -63,13 +62,15 @@ Udp::Init(int port, Poll *poll, Callbacks *callbacks)
    _poll->RegisterLoop(this);
 
    Log("binding udp socket to port %d.\n", port);
-   _socket = CreateSocket(port, 0);
+   _socket = CreateSocket(addr, port, 0, iMode);
 }
 
 void
 Udp::SendTo(char *buffer, int len, int flags, struct sockaddr *dst, int destlen)
 {
    struct sockaddr_in *to = (struct sockaddr_in *)dst;
+
+   printf("sending packet length %d to %s:%d.\n", len, inet_ntoa(to->sin_addr), ntohs(to->sin_port));
 
    int res = sendto(_socket, buffer, len, flags, dst, destlen);
    if (res == SOCKET_ERROR) {
@@ -117,6 +118,36 @@ Udp::OnLoopPoll(void *cookie)
    return true;
 }
 
+bool
+Udp::PollOnce()
+{
+   uint8          recv_buf[MAX_UDP_PACKET_SIZE];
+   sockaddr_in    recv_addr;
+   socklen_t      recv_addr_len;
+
+   recv_addr_len = sizeof(recv_addr);
+   int len = recvfrom(_socket, (char *)recv_buf, MAX_UDP_PACKET_SIZE, 0, (struct sockaddr *)&recv_addr, &recv_addr_len);
+
+   // TODO: handle len == 0... indicates a disconnect.
+
+   if (len == -1) {
+#ifdef _WIN32
+      int error = WSAGetLastError();
+#else
+      int error = 1;
+#endif
+      if (error != WSAEWOULDBLOCK) {
+         Log("recvfrom WSAGetLastError returned %d (%x).\n", error, error);
+      }
+      return false;
+   } else if (len > 0) {
+      Log("recvfrom returned (len:%d  from:%s:%d).\n", len,inet_ntoa(recv_addr.sin_addr), ntohs(recv_addr.sin_port) );
+      UdpMsg *msg = (UdpMsg *)recv_buf;
+      _callbacks->OnMsg(recv_addr, msg, len);
+   }
+
+   return true;
+}
 
 void
 Udp::Log(const char *fmt, ...)

@@ -257,6 +257,12 @@ UdpProtocol::OnLoopPoll(void *cookie)
    return true;
 }
 
+bool
+UdpProtocol::PollOnce()
+{
+   return true;
+}
+
 void
 UdpProtocol::Disconnect()
 {

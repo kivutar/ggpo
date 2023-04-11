@@ -24,6 +24,11 @@ struct UdpMsg
       QualityReply  = 5,
       KeepAlive     = 6,
       InputAck      = 7,
+
+      // UDP hole punching messages
+      Join          = 8,
+      OwnIP         = 9,
+      PeerIP        = 10,
    };
 
    struct connect_status {
@@ -34,7 +39,7 @@ struct UdpMsg
    struct {
       uint16         magic;
       uint16         sequence_number;
-      uint8          type;            /* packet type */
+      uint16         type;            /* packet type */
    } hdr;
    union {
       struct {
@@ -73,6 +78,19 @@ struct UdpMsg
          int               ack_frame:31;
       } input_ack;
 
+      struct {
+         uint32             crc;
+      } join;
+
+      struct {
+         uint8             pid;
+         char              ip[64];
+      } own_ip;
+
+      struct {
+         uint8             pid;
+         char              ip[64];
+      } peer_ip;
    } u;
 
 public:
@@ -90,6 +108,7 @@ public:
       case QualityReply:  return sizeof(u.quality_reply);
       case InputAck:      return sizeof(u.input_ack);
       case KeepAlive:     return 0;
+      case Join:          return sizeof(u.join);
       case Input:
          size = (int)((char *)&u.input.bits - (char *)&u.input);
          size += (u.input.num_bits + 7) / 8;
