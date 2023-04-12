@@ -50,7 +50,8 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
     * UDP hole punching
     */
 
-   _rdv.Init(0, &_poll, this, 0);
+   _rdv = new Udp();
+   _rdv->Init(0, &_poll, this, 0);
    sockaddr_in rdv_addr;
    rdv_addr.sin_family = AF_INET;
    rdv_addr.sin_port = htons(rdvport);
@@ -58,13 +59,13 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
 
    UdpMsg *msg = new UdpMsg(UdpMsg::Join);
    msg->u.join.crc = 3333; // TODO unhardcode this
-   _rdv.SendTo((char *)msg, 16, 0, (struct sockaddr *)&rdv_addr, sizeof(rdv_addr));
+   _rdv->SendTo((char *)msg, 16, 0, (struct sockaddr *)&rdv_addr, sizeof(rdv_addr));
 
    int i = 0;
    for (i = 0; i < _num_players; i++) {
-      _rdv.PollOnce();
+      _rdv->PollOnce();
    }
-   _rdv.Close();
+   delete _rdv;
 
    printf("Done with hole punching\n");
 
@@ -72,7 +73,8 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
     * Initialize the UDP port
     */
 
-   _udp.Init(local_port, &_poll, this, 1);
+   _udp = new Udp();
+   _udp->Init(local_port, &_poll, this, 1);
 
    _endpoints = new UdpProtocol[_num_players];
    memset(_local_connect_status, 0, sizeof(_local_connect_status));
@@ -101,7 +103,7 @@ Peer2PeerBackend::AddRemotePlayer(char *ip,
     */
    _synchronizing = true;
    
-   _endpoints[queue].Init(&_udp, _poll, queue, ip, port, _local_connect_status);
+   _endpoints[queue].Init(_udp, _poll, queue, ip, port, _local_connect_status);
    _endpoints[queue].SetDisconnectTimeout(_disconnect_timeout);
    _endpoints[queue].SetDisconnectNotifyStart(_disconnect_notify_start);
    _endpoints[queue].Synchronize();
@@ -121,7 +123,7 @@ GGPOErrorCode Peer2PeerBackend::AddSpectator(char *ip,
    }
    int queue = _num_spectators++;
 
-   _spectators[queue].Init(&_udp, _poll, queue + 1000, ip, port, _local_connect_status);
+   _spectators[queue].Init(_udp, _poll, queue + 1000, ip, port, _local_connect_status);
    _spectators[queue].SetDisconnectTimeout(_disconnect_timeout);
    _spectators[queue].SetDisconnectNotifyStart(_disconnect_notify_start);
    _spectators[queue].Synchronize();

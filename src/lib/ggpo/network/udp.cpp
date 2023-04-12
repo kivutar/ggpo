@@ -47,11 +47,6 @@ Udp::Udp() :
 
 Udp::~Udp(void)
 {
-   Close();
-}
-
-void Udp::Close()
-{
    if (_socket != INVALID_SOCKET) {
       closesocket(_socket);
       _socket = INVALID_SOCKET;
