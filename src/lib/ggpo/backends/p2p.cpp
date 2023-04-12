@@ -50,7 +50,7 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
     * UDP hole punching
     */
 
-   _rdv.Init(0, 0, &_poll, this, 0);
+   _rdv.Init(0, &_poll, this, 0);
    sockaddr_in rdv_addr;
    rdv_addr.sin_family = AF_INET;
    rdv_addr.sin_port = htons(rdvport);
@@ -72,7 +72,7 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
     * Initialize the UDP port
     */
 
-   _udp.Init(inet_addr(local_ip), local_port, &_poll, this, 1);
+   _udp.Init(local_port, &_poll, this, 1);
 
    _endpoints = new UdpProtocol[_num_players];
    memset(_local_connect_status, 0, sizeof(_local_connect_status));

@@ -28,7 +28,7 @@ SpectatorBackend::SpectatorBackend(GGPOSessionCallbacks *cb,
    /*
     * Initialize the UDP port
     */
-   _udp.Init(inet_addr(0), localport, &_poll, this, 1);
+   _udp.Init(localport, &_poll, this, 1);
 
    /*
     * Init the host endpoint

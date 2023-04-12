@@ -101,7 +101,6 @@ protected:
       QueueEntry(int time, sockaddr_in &dst, UdpMsg *m) : queue_time(time), dest_addr(dst), msg(m) { }
    };
 
-   bool CreateSocket(int retries);
    void UpdateNetworkStats(void);
    void QueueEvent(const UdpProtocol::Event &evt);
    void ClearSendQueue(void);

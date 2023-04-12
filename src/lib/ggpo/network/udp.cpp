@@ -9,7 +9,7 @@
 #include "udp.h"
 
 SOCKET
-CreateSocket(uint32_t addr, int bind_port, int retries, u_long iMode)
+CreateSocket(int bind_port, int retries, u_long iMode)
 {
    SOCKET s;
    sockaddr_in sin;
@@ -31,7 +31,7 @@ CreateSocket(uint32_t addr, int bind_port, int retries, u_long iMode)
    for (port = bind_port; port <= bind_port + retries; port++) {
       sin.sin_port = htons(port);
       if (bind(s, (sockaddr *)&sin, sizeof sin) != SOCKET_ERROR) {
-         Log("Udp bound to port: %d.\n", port);
+         printf("Udp bound to port: %d.\n", port);
          return s;
       }
    }
@@ -59,7 +59,7 @@ void Udp::Close()
 }
 
 void
-Udp::Init(uint32_t addr, int port, Poll *poll, Callbacks *callbacks, u_long iMode)
+Udp::Init(int port, Poll *poll, Callbacks *callbacks, u_long iMode)
 {
    _callbacks = callbacks;
 
@@ -67,7 +67,7 @@ Udp::Init(uint32_t addr, int port, Poll *poll, Callbacks *callbacks, u_long iMod
    _poll->RegisterLoop(this);
 
    Log("binding udp socket to port %d.\n", port);
-   _socket = CreateSocket(addr, port, 0, iMode);
+   _socket = CreateSocket(port, 0, iMode);
 }
 
 void
