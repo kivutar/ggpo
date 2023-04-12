@@ -66,17 +66,17 @@ ggpo_in_rollback(GGPOSession *ggpo)
    return ggpo->InRollback();
 }
 
-// GGPOErrorCode
-// ggpo_start_synctest(GGPOSession **ggpo,
-//                     GGPOSessionCallbacks *cb,
-//                     char *game,
-//                     int num_players,
-//                     int input_size,
-//                     int frames)
-// {
-//    *ggpo = (GGPOSession *)new SyncTestBackend(cb, game, frames, num_players);
-//    return GGPO_OK;
-// }
+GGPOErrorCode
+ggpo_start_synctest(GGPOSession **ggpo,
+                    GGPOSessionCallbacks *cb,
+                    char *game,
+                    int num_players,
+                    int input_size,
+                    int frames)
+{
+   *ggpo = (GGPOSession *)new SyncTestBackend(cb, game, frames, num_players);
+   return GGPO_OK;
+}
 
 GGPOErrorCode
 ggpo_set_frame_delay(GGPOSession *ggpo,
