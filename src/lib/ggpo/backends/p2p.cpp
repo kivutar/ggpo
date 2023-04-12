@@ -623,17 +623,17 @@ Peer2PeerBackend::OnMsg(sockaddr_in &from, UdpMsg *msg, int len)
 {
    switch (msg->hdr.type) {
       case UdpMsg::OwnIP: {
-         printf("Got own IP! Player ID: %d, Player IP: %s\n", msg->u.own_ip.pid, msg->u.own_ip.ip);
          strcpy(local_ip, strtok(msg->u.own_ip.ip, ":"));
          local_port = atoi(strtok(NULL, ":"));
          local_idx = msg->u.own_ip.pid;
+         printf("Got own IP! Player ID: %d, Player IP: %s:%d\n", local_idx, local_ip, local_port);
          return;
       }
       break;
       case UdpMsg::PeerIP: {
-         printf("Got peer IP! Player ID: %d, Player IP: %s\n", msg->u.peer_ip.pid, msg->u.peer_ip.ip);
          strcpy(remote_ip, strtok(msg->u.peer_ip.ip, ":"));
          remote_port = atoi(strtok(NULL, ":"));
+         printf("Got peer IP! Player ID: %d, Player IP: %s:%d\n", msg->u.peer_ip.pid, remote_ip, remote_port);
          return;
       }
       break;
