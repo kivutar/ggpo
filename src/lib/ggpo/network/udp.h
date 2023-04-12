@@ -45,8 +45,6 @@ public:
    virtual bool OnLoopPoll(void *cookie);
    bool PollOnce();
 
-   void Close();
-
 public:
    ~Udp(void);
 
