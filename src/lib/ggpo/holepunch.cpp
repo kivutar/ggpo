@@ -49,6 +49,7 @@ ggpo_hole_punch(int num_players,
    UdpMsg *msg = new UdpMsg(UdpMsg::Join);
    msg->u.join.crc = 3333; // TODO unhardcode this
    _rdv->SendTo((char *)msg, 16, 0, (struct sockaddr *)&rdv_addr, sizeof(rdv_addr));
+   delete msg;
 
    for (int i = 0; i < num_players; i++) {
       _rdv->PollOnce();
