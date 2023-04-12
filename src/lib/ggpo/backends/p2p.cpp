@@ -6,13 +6,6 @@
  */
 
 #include "p2p.h"
-#include "../../../../../netplay.h"
-
-extern int  local_idx;
-extern char local_ip[32];
-extern int  local_port;
-extern char remote_ip[32];
-extern int  remote_port;
 
 static const int RECOMMENDATION_INTERVAL           = 240;
 static const int DEFAULT_DISCONNECT_TIMEOUT        = 5000;
@@ -20,8 +13,7 @@ static const int DEFAULT_DISCONNECT_NOTIFY_START   = 750;
 
 Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
                                    const char *gamename,
-                                   const char *rdvaddr,
-                                   int rdvport,
+                                   int localport,
                                    int num_players,
                                    int input_size) :
     _num_players(num_players),
@@ -47,34 +39,10 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
    _sync.Init(config);
 
    /*
-    * UDP hole punching
-    */
-
-   _rdv = new Udp();
-   _rdv->Init(0, &_poll, this, 0);
-   sockaddr_in rdv_addr;
-   rdv_addr.sin_family = AF_INET;
-   rdv_addr.sin_port = htons(rdvport);
-   rdv_addr.sin_addr.s_addr = inet_addr(rdvaddr);
-
-   UdpMsg *msg = new UdpMsg(UdpMsg::Join);
-   msg->u.join.crc = 3333; // TODO unhardcode this
-   _rdv->SendTo((char *)msg, 16, 0, (struct sockaddr *)&rdv_addr, sizeof(rdv_addr));
-
-   int i = 0;
-   for (i = 0; i < _num_players; i++) {
-      _rdv->PollOnce();
-   }
-   delete _rdv;
-
-   printf("Done with hole punching\n");
-
-   /*
     * Initialize the UDP port
     */
 
-   _udp = new Udp();
-   _udp->Init(local_port, &_poll, this, 1);
+   _udp.Init(localport, &_poll, this, 1);
 
    _endpoints = new UdpProtocol[_num_players];
    memset(_local_connect_status, 0, sizeof(_local_connect_status));
@@ -103,7 +71,7 @@ Peer2PeerBackend::AddRemotePlayer(char *ip,
     */
    _synchronizing = true;
    
-   _endpoints[queue].Init(_udp, _poll, queue, ip, port, _local_connect_status);
+   _endpoints[queue].Init(&_udp, _poll, queue, ip, port, _local_connect_status);
    _endpoints[queue].SetDisconnectTimeout(_disconnect_timeout);
    _endpoints[queue].SetDisconnectNotifyStart(_disconnect_notify_start);
    _endpoints[queue].Synchronize();
@@ -123,7 +91,7 @@ GGPOErrorCode Peer2PeerBackend::AddSpectator(char *ip,
    }
    int queue = _num_spectators++;
 
-   _spectators[queue].Init(_udp, _poll, queue + 1000, ip, port, _local_connect_status);
+   _spectators[queue].Init(&_udp, _poll, queue + 1000, ip, port, _local_connect_status);
    _spectators[queue].SetDisconnectTimeout(_disconnect_timeout);
    _spectators[queue].SetDisconnectNotifyStart(_disconnect_notify_start);
    _spectators[queue].Synchronize();
@@ -623,24 +591,6 @@ Peer2PeerBackend::PlayerHandleToQueue(GGPOPlayerHandle player, int *queue)
 void
 Peer2PeerBackend::OnMsg(sockaddr_in &from, UdpMsg *msg, int len)
 {
-   switch (msg->hdr.type) {
-      case UdpMsg::OwnIP: {
-         strcpy(local_ip, strtok(msg->u.own_ip.ip, ":"));
-         local_port = atoi(strtok(NULL, ":"));
-         local_idx = msg->u.own_ip.pid;
-         printf("Got own IP! Player ID: %d, Player IP: %s:%d\n", local_idx, local_ip, local_port);
-         return;
-      }
-      break;
-      case UdpMsg::PeerIP: {
-         strcpy(remote_ip, strtok(msg->u.peer_ip.ip, ":"));
-         remote_port = atoi(strtok(NULL, ":"));
-         printf("Got peer IP! Player ID: %d, Player IP: %s:%d\n", msg->u.peer_ip.pid, remote_ip, remote_port);
-         return;
-      }
-      break;
-   }
-
    for (int i = 0; i < _num_players; i++) {
       if (_endpoints[i].HandlesMsg(from, msg)) {
          _endpoints[i].OnMsg(msg, len);

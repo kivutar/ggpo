@@ -311,6 +311,11 @@ typedef struct GGPONetworkStats {
    } timesync;
 } GGPONetworkStats;
 
+GGPOErrorCode
+ggpo_hole_punch(int num_players,
+                const char *rdvaddr,
+                int rdvport);
+
 /*
  * ggpo_start_session --
  *
@@ -339,8 +344,7 @@ GGPO_API GGPOErrorCode __cdecl ggpo_start_session(GGPOSession **session,
                                                   const char *game,
                                                   int num_players,
                                                   int input_size,
-                                                  const char *rdvaddr,
-                                                  int rdvport);
+                                                  int localport);
 
 
 /*
