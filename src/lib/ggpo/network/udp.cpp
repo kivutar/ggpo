@@ -63,6 +63,7 @@ Udp::Init(int port, Poll *poll, Callbacks *callbacks, u_long iMode)
 
    Log("binding udp socket to port %d.\n", port);
    _socket = CreateSocket(port, 0, iMode);
+   ASSERT(_socket != INVALID_SOCKET && "Failed to bind udp socket");
 }
 
 void
@@ -107,6 +108,7 @@ Udp::OnLoopPoll(void *cookie)
 #endif
          if (error != WSAEWOULDBLOCK) {
             Log("recvfrom WSAGetLastError returned %d (%x).\n", error, error);
+            ASSERT(FALSE && "recvfrom returned error");
          }
          break;
       } else if (len > 0) {
