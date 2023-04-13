@@ -56,6 +56,11 @@ ggpo_hole_punch(int num_players,
    }
 
    printf("Sending handshake\n");
+
+   // my router doesn't support hairpinning so I have to do this for now
+   if (strcmp(local_ip, remote_ip) == 0)
+      strcpy(remote_ip, "127.0.0.1");
+
    sockaddr_in peer_addr;
    peer_addr.sin_family = AF_INET;
    peer_addr.sin_port = htons(remote_port);

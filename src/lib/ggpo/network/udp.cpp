@@ -25,7 +25,7 @@ CreateSocket(int bind_port, int retries, u_long iMode)
 
    // iMode = 0 means blocking
    int res = ioctlsocket(s, FIONBIO, &iMode);
-   if (res != NO_ERROR)
+   if (res < 0)
       printf("ioctlsocket failed with error: %d\n", res);
 
    sin.sin_family = AF_INET;
