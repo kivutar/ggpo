@@ -29,6 +29,7 @@ struct UdpMsg
       Join          = 8,
       OwnIP         = 9,
       PeerIP        = 10,
+      HandShake     = 11,
    };
 
    struct connect_status {
@@ -108,7 +109,6 @@ public:
       case QualityReply:  return sizeof(u.quality_reply);
       case InputAck:      return sizeof(u.input_ack);
       case KeepAlive:     return 0;
-      case Join:          return sizeof(u.join);
       case Input:
          size = (int)((char *)&u.input.bits - (char *)&u.input);
          size += (u.input.num_bits + 7) / 8;

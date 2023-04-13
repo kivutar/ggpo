@@ -54,6 +54,21 @@ ggpo_hole_punch(int num_players,
    for (int i = 0; i < num_players; i++) {
       _rdv->PollOnce();
    }
+
+   printf("Sending handshake\n");
+   sockaddr_in peer_addr;
+   peer_addr.sin_family = AF_INET;
+   peer_addr.sin_port = htons(remote_port);
+   peer_addr.sin_addr.s_addr = inet_addr(remote_ip);
+
+   UdpMsg *msg = new UdpMsg(UdpMsg::HandShake);
+   _rdv->SendTo((char *)msg, 16, 0, (struct sockaddr *)&peer_addr, sizeof(peer_addr));
+   delete msg;
+
+   for (int i = 0; i < num_players - 1; i++) {
+      _rdv->PollOnce();
+   }
+
    delete _rdv;
 
    printf("Done with hole punching\n");

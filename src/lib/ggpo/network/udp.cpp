@@ -19,12 +19,14 @@ CreateSocket(int bind_port, int retries, u_long iMode)
    loptval.l_onoff = 0;
    loptval.l_linger = 0;
 
-   s = socket(AF_INET, SOCK_DGRAM, 0);
+   s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
    setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char *)&optval, sizeof optval);
    setsockopt(s, SOL_SOCKET, SO_LINGER, (const char *)&loptval, sizeof loptval);
 
    // iMode = 0 means blocking
-   ioctlsocket(s, FIONBIO, &iMode);
+   int res = ioctlsocket(s, FIONBIO, &iMode);
+   if (res != NO_ERROR)
+      printf("ioctlsocket failed with error: %d\n", res);
 
    sin.sin_family = AF_INET;
    sin.sin_addr.s_addr = htonl(INADDR_ANY);
