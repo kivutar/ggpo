@@ -42,7 +42,7 @@ Peer2PeerBackend::Peer2PeerBackend(GGPOSessionCallbacks *cb,
     * Initialize the UDP port
     */
 
-   _udp.Init(localport, &_poll, this, 1);
+   _udp.Init(localport, &_poll, this);
 
    _endpoints = new UdpProtocol[_num_players];
    memset(_local_connect_status, 0, sizeof(_local_connect_status));

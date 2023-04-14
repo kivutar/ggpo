@@ -9,7 +9,7 @@
 #include "udp.h"
 
 SOCKET
-CreateSocket(int bind_port, int retries, u_long iMode)
+CreateSocket(int bind_port, int retries)
 {
    SOCKET s;
    sockaddr_in sin;
@@ -19,11 +19,12 @@ CreateSocket(int bind_port, int retries, u_long iMode)
    loptval.l_onoff = 0;
    loptval.l_linger = 0;
 
-   s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+   s = socket(AF_INET, SOCK_DGRAM, 0);
    setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char *)&optval, sizeof optval);
    setsockopt(s, SOL_SOCKET, SO_LINGER, (const char *)&loptval, sizeof loptval);
 
-   // iMode = 0 means blocking
+   // non-blocking...
+   u_long iMode = 1;
    int res = ioctlsocket(s, FIONBIO, &iMode);
    if (res < 0)
       printf("ioctlsocket failed with error: %d\n", res);
@@ -56,7 +57,7 @@ Udp::~Udp(void)
 }
 
 void
-Udp::Init(int port, Poll *poll, Callbacks *callbacks, u_long iMode)
+Udp::Init(int port, Poll *poll, Callbacks *callbacks)
 {
    _callbacks = callbacks;
 
@@ -64,7 +65,7 @@ Udp::Init(int port, Poll *poll, Callbacks *callbacks, u_long iMode)
    _poll->RegisterLoop(this);
 
    Log("binding udp socket to port %d.\n", port);
-   _socket = CreateSocket(port, 0, iMode);
+   _socket = CreateSocket(port, 0);
    ASSERT(_socket != INVALID_SOCKET && "Failed to bind udp socket");
 }
 
