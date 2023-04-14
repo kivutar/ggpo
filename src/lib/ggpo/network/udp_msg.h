@@ -40,7 +40,7 @@ struct UdpMsg
    struct {
       uint16         magic;
       uint16         sequence_number;
-      uint16         type;            /* packet type */
+      uint8          type;            /* packet type */
    } hdr;
    union {
       struct {
