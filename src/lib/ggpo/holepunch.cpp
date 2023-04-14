@@ -63,7 +63,7 @@ ggpo_hole_punch(int num_players,
    delete msg;
 
    while (!done2) {
-      _rdv->PollOnce();
+      poll.Pump(0);
    }
 
    printf("Sending handshake\n");
@@ -82,7 +82,7 @@ ggpo_hole_punch(int num_players,
    delete hds;
 
    while (!done3) {
-      _rdv->PollOnce();
+      poll.Pump(0);
    }
 
    delete _rdv;

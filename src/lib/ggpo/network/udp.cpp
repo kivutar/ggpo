@@ -111,7 +111,7 @@ Udp::OnLoopPoll(void *cookie)
 #endif
          if (error != WSAEWOULDBLOCK) {
             Log("recvfrom WSAGetLastError returned %d (%x).\n", error, error);
-            ASSERT(FALSE && "recvfrom returned error");
+            //ASSERT(FALSE && "recvfrom returned error");
          }
          break;
       } else if (len > 0) {
@@ -120,37 +120,6 @@ Udp::OnLoopPoll(void *cookie)
          _callbacks->OnMsg(recv_addr, msg, len);
       } 
    }
-   return true;
-}
-
-bool
-Udp::PollOnce()
-{
-   uint8          recv_buf[MAX_UDP_PACKET_SIZE];
-   sockaddr_in    recv_addr;
-   socklen_t      recv_addr_len;
-
-   recv_addr_len = sizeof(recv_addr);
-   int len = recvfrom(_socket, (char *)recv_buf, MAX_UDP_PACKET_SIZE, 0, (struct sockaddr *)&recv_addr, &recv_addr_len);
-
-   // TODO: handle len == 0... indicates a disconnect.
-
-   if (len == -1) {
-#ifdef _WIN32
-      int error = WSAGetLastError();
-#else
-      int error = 1;
-#endif
-      if (error != WSAEWOULDBLOCK) {
-         Log("recvfrom WSAGetLastError returned %d (%x).\n", error, error);
-      }
-      return false;
-   } else if (len > 0) {
-      Log("recvfrom returned (len:%d  from:%s:%d).\n", len,inet_ntoa(recv_addr.sin_addr), ntohs(recv_addr.sin_port) );
-      UdpMsg *msg = (UdpMsg *)recv_buf;
-      _callbacks->OnMsg(recv_addr, msg, len);
-   }
-
    return true;
 }
 
