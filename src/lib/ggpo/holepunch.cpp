@@ -51,7 +51,7 @@ ggpo_hole_punch(int num_players,
    Punch punch;
 
    Udp *_rdv = new Udp();
-   _rdv->Init(0, &poll, &punch, 1);
+   _rdv->Init(0, &poll, &punch);
    sockaddr_in rdv_addr;
    rdv_addr.sin_family = AF_INET;
    rdv_addr.sin_port = htons(rdvport);
