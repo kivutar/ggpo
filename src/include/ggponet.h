@@ -94,7 +94,7 @@ typedef struct GGPOPlayer {
       } local;
       struct {
          char        ip_address[32];
-         short       port;
+         int         port;
       } remote;
    } u;
 } GGPOPlayer;
@@ -310,6 +310,11 @@ typedef struct GGPONetworkStats {
       int   remote_frames_behind;
    } timesync;
 } GGPONetworkStats;
+
+GGPOErrorCode
+ggpo_hole_punch(int num_players,
+                const char *rdvaddr,
+                int rdvport);
 
 /*
  * ggpo_start_session --

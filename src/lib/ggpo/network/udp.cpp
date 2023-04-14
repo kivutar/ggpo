@@ -25,14 +25,16 @@ CreateSocket(int bind_port, int retries)
 
    // non-blocking...
    u_long iMode = 1;
-   ioctlsocket(s, FIONBIO, &iMode);
+   int res = ioctlsocket(s, FIONBIO, &iMode);
+   if (res < 0)
+      printf("ioctlsocket failed with error: %d\n", res);
 
    sin.sin_family = AF_INET;
    sin.sin_addr.s_addr = htonl(INADDR_ANY);
    for (port = bind_port; port <= bind_port + retries; port++) {
       sin.sin_port = htons(port);
       if (bind(s, (sockaddr *)&sin, sizeof sin) != SOCKET_ERROR) {
-         Log("Udp bound to port: %d.\n", port);
+         printf("Udp bound to port: %d.\n", port);
          return s;
       }
    }
@@ -64,12 +66,15 @@ Udp::Init(int port, Poll *poll, Callbacks *callbacks)
 
    Log("binding udp socket to port %d.\n", port);
    _socket = CreateSocket(port, 0);
+   ASSERT(_socket != INVALID_SOCKET && "Failed to bind udp socket");
 }
 
 void
 Udp::SendTo(char *buffer, int len, int flags, struct sockaddr *dst, int destlen)
 {
    struct sockaddr_in *to = (struct sockaddr_in *)dst;
+
+   printf("sending packet length %d to %s:%d.\n", len, inet_ntoa(to->sin_addr), ntohs(to->sin_port));
 
    int res = sendto(_socket, buffer, len, flags, dst, destlen);
    if (res == SOCKET_ERROR) {
@@ -106,6 +111,7 @@ Udp::OnLoopPoll(void *cookie)
 #endif
          if (error != WSAEWOULDBLOCK) {
             Log("recvfrom WSAGetLastError returned %d (%x).\n", error, error);
+            //ASSERT(FALSE && "recvfrom returned error");
          }
          break;
       } else if (len > 0) {
@@ -116,7 +122,6 @@ Udp::OnLoopPoll(void *cookie)
    }
    return true;
 }
-
 
 void
 Udp::Log(const char *fmt, ...)

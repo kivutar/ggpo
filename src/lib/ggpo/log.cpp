@@ -28,14 +28,15 @@ void Log(const char *fmt, ...)
 
 void Logv(const char *fmt, va_list args)
 {
-   if (!getenv("ggpo.log") || getenv("ggpo.log.ignore")) {
-      return;
-   }
-   if (!logfile) {
-      sprintf(logbuf, "log-%d.log", Platform::GetProcessID());
-      logfile = fopen(logbuf, "w");
-   }
-   Logv(logfile, fmt, args);
+   // if (!getenv("ggpo.log") || getenv("ggpo.log.ignore")) {
+   //    return;
+   // }
+   // if (!logfile) {
+   //    sprintf(logbuf, "log-%d.log", Platform::GetProcessID());
+   //    logfile = fopen(logbuf, "w");
+   // }
+   // Logv(logfile, fmt, args);
+   printf(fmt, args);
 }
 
 void Logv(FILE *fp, const char *fmt, va_list args)

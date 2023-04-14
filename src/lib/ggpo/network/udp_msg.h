@@ -24,6 +24,12 @@ struct UdpMsg
       QualityReply  = 5,
       KeepAlive     = 6,
       InputAck      = 7,
+
+      // UDP hole punching messages
+      Join          = 8,
+      OwnIP         = 9,
+      PeerIP        = 10,
+      HandShake     = 11,
    };
 
    struct connect_status {
@@ -73,6 +79,19 @@ struct UdpMsg
          int               ack_frame:31;
       } input_ack;
 
+      struct {
+         uint32             crc;
+      } join;
+
+      struct {
+         uint8             pid;
+         char              ip[64];
+      } own_ip;
+
+      struct {
+         uint8             pid;
+         char              ip[64];
+      } peer_ip;
    } u;
 
 public:

@@ -55,7 +55,7 @@ typedef int int32;
    do {                                                     \
       if (!(x)) {                                           \
          char buf[1024];                                    \
-         snprintf(buf, sizeof(buf) - 1, "Assertion: %s @ %s:%d (pid:%d)", #x, __FILE__, __LINE__, Platform::GetProcessID()); \
+         snprintf(buf, sizeof(buf) - 1, "Assertion: %s @ %s:%d (pid:%lu)", #x, __FILE__, __LINE__, Platform::GetProcessID()); \
          Log("%s\n", buf);                                  \
          Log("\n");                                         \
          Log("\n");                                         \
