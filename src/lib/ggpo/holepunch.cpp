@@ -7,6 +7,10 @@ extern int  local_port;
 extern char remote_ip[32];
 extern int  remote_port;
 
+bool done1 = false;
+bool done2 = false;
+bool done3 = false;
+
 Punch::Punch() {}
 
 void
@@ -18,6 +22,7 @@ Punch::OnMsg(sockaddr_in &from, UdpMsg *msg, int len)
          local_port = atoi(strtok(NULL, ":"));
          local_idx = msg->u.own_ip.pid;
          printf("Got own IP! Player ID: %d, Player IP: %s:%d\n", local_idx, local_ip, local_port);
+         done1 = true;
          return;
       }
       break;
@@ -25,9 +30,15 @@ Punch::OnMsg(sockaddr_in &from, UdpMsg *msg, int len)
          strcpy(remote_ip, strtok(msg->u.peer_ip.ip, ":"));
          remote_port = atoi(strtok(NULL, ":"));
          printf("Got peer IP! Player ID: %d, Player IP: %s:%d\n", msg->u.peer_ip.pid, remote_ip, remote_port);
+         done2 = true;
          return;
       }
       break;
+      case UdpMsg::HandShake: {
+         printf("Got handshake from peer!\n");
+         done3 = true;
+         return;
+      }
    }
 }
 
@@ -40,7 +51,7 @@ ggpo_hole_punch(int num_players,
    Punch punch;
 
    Udp *_rdv = new Udp();
-   _rdv->Init(0, &poll, &punch, 0);
+   _rdv->Init(0, &poll, &punch, 1);
    sockaddr_in rdv_addr;
    rdv_addr.sin_family = AF_INET;
    rdv_addr.sin_port = htons(rdvport);
@@ -51,7 +62,7 @@ ggpo_hole_punch(int num_players,
    _rdv->SendTo((char *)msg, 16, 0, (struct sockaddr *)&rdv_addr, sizeof(rdv_addr));
    delete msg;
 
-   for (int i = 0; i < num_players; i++) {
+   while (!done2) {
       _rdv->PollOnce();
    }
 
@@ -70,7 +81,7 @@ ggpo_hole_punch(int num_players,
    _rdv->SendTo((char *)hds, 8, 0, (struct sockaddr *)&peer_addr, sizeof(peer_addr));
    delete hds;
 
-   for (int i = 0; i < num_players - 1; i++) {
+   while (!done3) {
       _rdv->PollOnce();
    }
 
