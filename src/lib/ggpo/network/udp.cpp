@@ -20,8 +20,8 @@ CreateSocket(int bind_port, int retries)
    loptval.l_linger = 0;
 
    s = socket(AF_INET, SOCK_DGRAM, 0);
-   setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char *)&optval, sizeof optval);
-   setsockopt(s, SOL_SOCKET, SO_LINGER, (const char *)&loptval, sizeof loptval);
+   // setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char *)&optval, sizeof optval);
+   // setsockopt(s, SOL_SOCKET, SO_LINGER, (const char *)&loptval, sizeof loptval);
 
    // non-blocking...
    u_long iMode = 1;
@@ -74,7 +74,7 @@ Udp::SendTo(char *buffer, int len, int flags, struct sockaddr *dst, int destlen)
 {
    struct sockaddr_in *to = (struct sockaddr_in *)dst;
 
-   printf("sending packet length %d to %s:%d.\n", len, inet_ntoa(to->sin_addr), ntohs(to->sin_port));
+   Log("sending packet length %d to %s:%d.\n", len, inet_ntoa(to->sin_addr), ntohs(to->sin_port));
 
    int res = sendto(_socket, buffer, len, flags, dst, destlen);
    if (res == SOCKET_ERROR) {
@@ -110,12 +110,12 @@ Udp::OnLoopPoll(void *cookie)
          int error = 1;
 #endif
          if (error != WSAEWOULDBLOCK) {
-            Log("recvfrom WSAGetLastError returned %d (%x).\n", error, error);
+            printf("recvfrom WSAGetLastError returned %d (%x).\n", error, error);
             //ASSERT(FALSE && "recvfrom returned error");
          }
          break;
       } else if (len > 0) {
-         Log("recvfrom returned (len:%d  from:%s:%d).\n", len,inet_ntoa(recv_addr.sin_addr), ntohs(recv_addr.sin_port) );
+         printf("recvfrom returned (len:%d  from:%s:%d).\n", len,inet_ntoa(recv_addr.sin_addr), ntohs(recv_addr.sin_port) );
          UdpMsg *msg = (UdpMsg *)recv_buf;
          _callbacks->OnMsg(recv_addr, msg, len);
       } 
@@ -137,4 +137,5 @@ Udp::Log(const char *fmt, ...)
    buf[ARRAY_SIZE(buf)-1] = '\0';
    ::Log(buf);
    va_end(args);
+   fflush(stdout);
 }

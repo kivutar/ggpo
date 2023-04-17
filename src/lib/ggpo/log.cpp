@@ -22,8 +22,9 @@ void Log(const char *fmt, ...)
 {
    va_list args;
    va_start(args, fmt);
-   Logv(fmt, args);
+   printf(fmt, args);
    va_end(args);
+   fflush(stdout);
 }
 
 void Logv(const char *fmt, va_list args)
@@ -37,6 +38,7 @@ void Logv(const char *fmt, va_list args)
    // }
    // Logv(logfile, fmt, args);
    printf(fmt, args);
+   fflush(stdout);
 }
 
 void Logv(FILE *fp, const char *fmt, va_list args)
