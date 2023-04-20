@@ -20,22 +20,26 @@ static char logbuf[4 * 1024 * 1024];
 
 void Log(const char *fmt, ...)
 {
-   va_list args;
-   va_start(args, fmt);
-   Logv(fmt, args);
-   va_end(args);
+   // va_list args;
+   // va_start(args, fmt);
+   // printf(fmt, args);
+   // va_end(args);
+   // fflush(stdout);
 }
 
 void Logv(const char *fmt, va_list args)
 {
-   if (!getenv("ggpo.log") || getenv("ggpo.log.ignore")) {
-      return;
-   }
-   if (!logfile) {
-      sprintf(logbuf, "log-%d.log", Platform::GetProcessID());
-      logfile = fopen(logbuf, "w");
-   }
-   Logv(logfile, fmt, args);
+   // if (!getenv("ggpo.log") || getenv("ggpo.log.ignore")) {
+   //    return;
+   // }
+   // if (!logfile) {
+   //    sprintf(logbuf, "log-%d.log", Platform::GetProcessID());
+   //    logfile = fopen(logbuf, "w");
+   // }
+   // Logv(logfile, fmt, args);
+
+   // printf(fmt, args);
+   // fflush(stdout);
 }
 
 void Logv(FILE *fp, const char *fmt, va_list args)
